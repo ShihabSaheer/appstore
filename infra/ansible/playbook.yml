@@ -1,0 +1,75 @@
+- hosts: prometheus
+  become: yes
+  tasks:
+    - name: Install dependencies
+      apt:
+        name:
+          - wget
+          - tar
+        update_cache: yes
+
+    - name: Add Prometheus user and directories
+      user:
+        name: prometheus
+        shell: /sbin/nologin
+        system: yes
+      notify: restart prometheus
+
+    - name: Download Prometheus
+      get_url:
+        url: https://github.com/prometheus/prometheus/releases/download/v2.51.1/prometheus-2.51.1.linux-amd64.tar.gz
+        dest: /tmp/prometheus.tar.gz
+
+    - name: Extract Prometheus
+      unarchive:
+        src: /tmp/prometheus.tar.gz
+        dest: /opt/
+        remote_src: yes
+
+    - name: Set up Prometheus config
+      copy:
+        dest: /etc/prometheus/prometheus.yml
+        content: |
+          global:
+            scrape_interval: 15s
+
+          scrape_configs:
+            - job_name: 'prometheus'
+              static_configs:
+                - targets: ['localhost:9090']
+
+            - job_name: 'appstore'
+              static_configs:
+                - targets: ['<app-ip>:80']
+      notify: restart prometheus
+
+    - name: Create systemd service
+      copy:
+        dest: /etc/systemd/system/prometheus.service
+        content: |
+          [Unit]
+          Description=Prometheus
+          After=network.target
+
+          [Service]
+          User=prometheus
+          ExecStart=/opt/prometheus-2.51.1.linux-amd64/prometheus \
+            --config.file=/etc/prometheus/prometheus.yml \
+            --storage.tsdb.path=/var/lib/prometheus
+
+          [Install]
+          WantedBy=multi-user.target
+      notify: restart prometheus
+
+    - name: Enable Prometheus
+      systemd:
+        name: prometheus
+        enabled: yes
+        state: started
+
+  handlers:
+    - name: restart prometheus
+      systemd:
+        name: prometheus
+        state: restarted
+  
