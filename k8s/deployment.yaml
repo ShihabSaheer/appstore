@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: appstore
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: appstore
+  template:
+    metadata:
+      labels:
+        app: appstore
+    spec:
+      containers:
+      - name: web
+        image: milleniaprophet/appstore
+        ports:
+        - containerPort: 80
