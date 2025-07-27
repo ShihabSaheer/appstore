@@ -71,3 +71,11 @@ Open your browser at the below url to see the pages created:
 http://localhost/gandalf
 http://localhost/colombo
 http://localhost/metrics
+
+### Run Locally with Docker
+# To build the docker image
+docker build -t local-gandalf-app .
+# To run the detached container
+docker run -d -p 80:80 local-gandalf-app
+
+The container can be accessed from http:localhost
