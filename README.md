@@ -60,7 +60,7 @@ Follow the below steps to run the application in the local
 - `pip` (Python package manager)
 
 **Run Application Locally**
-
+```
 # Install dependencies
 pip install -r requirements.txt
 
