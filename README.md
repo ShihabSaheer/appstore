@@ -17,6 +17,8 @@ The tech stack used:
 - **Cloud:** Google Cloud Platform (GKE + Compute Engine)
 
 **Project Structure**
+
+
 appstore/
 ├── Dockerfile
 ├── app.py
