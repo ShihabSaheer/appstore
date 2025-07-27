@@ -59,7 +59,7 @@ Follow the below steps to run the application in the local
 - Python 3.10+
 - `pip` (Python package manager)
 
-### 🐍 Run Locally with Python
+### Run Locally with Python
 
 ```bash
 # Install dependencies
@@ -72,10 +72,3 @@ Open your browser at the below url to see the pages created:
 http://localhost/gandalf
 http://localhost/colombo
 http://localhost/metrics
-
-**Run Locally with Docker**
-# Build Docker image
-docker build -t local-gandalf-app .
-
-# Run container
-docker run -d -p 80:80 local-gandalf-app
