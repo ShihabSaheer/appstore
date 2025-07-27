@@ -1,6 +1,5 @@
-This is a containerized Flask web application built to demonstrate a minimal web server with Prometheus metrics integration. It supports deployment on Google Kubernetes Engine (GKE) with infrastructure provisioned via Terraform and configuration managed using Ansible.
+This is a containerized web application built to demonstrate a minimal web server with Prometheus metrics integration. It supports deployment on Google Kubernetes Engine (GKE) with infrastructure provisioned via Terraform and configuration managed using Ansible.
 
-## ✨ Features
 
 - 🌐 Web endpoints:
 - `/gandalf`: Displays an image of Gandalf with a message.
