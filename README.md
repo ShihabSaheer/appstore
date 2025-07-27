@@ -68,14 +68,94 @@ pip install -r requirements.txt
 python app.py
 
 Open your browser at the below url to see the pages created:
-http://localhost/gandalf
-http://localhost/colombo
-http://localhost/metrics
+- http://localhost/gandalf
+- http://localhost/colombo
+- http://localhost/metrics
+```
 
-### Run Locally with Docker
+### Run application with Docker
+```
 # To build the docker image
 docker build -t local-gandalf-app .
 # To run the detached container
 docker run -d -p 80:80 local-gandalf-app
 
 The container can be accessed from http:localhost
+```
+
+**Cloud Deployment (GCP + Kubernetes + Prometheus)**
+Prerequisites
+- GCP Project with billing enabled
+- gcloud, kubectl, terraform, ansible, docker installed
+- SSH keys generated at ~/.ssh/id_rsa.pub
+
+ Step 1: Configure Terraform
+ - terraform.tfvars
+   - project_id      = "your-gcp-project-id" - provide the GCP Project ID
+   - ssh_user        = "your-ssh-user" - The SSH username
+   - public_key_path = "~/.ssh/id_rsa.pub" - The Public RSA key path
+
+Step 2: Deploy Infra with Terraform
+  - terraform init
+  - terraform apply
+
+Step 3: Connect kubectl to GKE
+  - gcloud container clusters get-credentials appstore-cluster --zone <zone> --project <project_id>
+
+Step 4: Deploy App to Kubernetes
+  - kubectl apply -f k8s/
+  
+Step 5: Access the App
+  - kubectl get svc appstore
+    - http://loadbalancer/gandalf
+    - http://loadbalancer/colombo
+    - http://loadbalancer/metrics
+
+Step 6: Install Prometheus via Ansible
+  - Update inventory.ini with Prometheus VM IP  
+    <VM_PUBLIC_IP> ansible_user=your-ssh-user ansible_ssh_private_key_file=~/.ssh/id_rsa - The <VM_PUBLIC_IP> can be taken once it is created with terraform.
+
+ - Once the VM IP is updated then run the ansible playbook to install Prometheus inside the VM
+   - ansible-playbook -i inventory.ini playbook.yml
+
+Step 7: Access Prometheus UI
+  - http://<VM_PUBLIC_IP>:9090 - The VM can be accessed with Public IP cretead for the VM.
+
+Below queries can be used to fetch Query metrics:
+- gandalf_requests_total
+- colombo_requests_total
+
+The below job is scheduled and configured to scrape the app on port 80:
+```
+ - job_name: "appstore_metrics"
+    static_configs:
+      - targets: ["flask-app:80"]
+        labels:
+          app: "appstore"
+```
+Ensure the DNS name or service name matches your deployment.
+
+Screenshots for reference:
+
+**/**
+<img width="1918" height="950" alt="image" src="https://github.com/user-attachments/assets/1604d530-f4d7-427a-b97a-73f47fa7c7c7" />
+
+**/gandalf**
+<img width="1897" height="962" alt="image" src="https://github.com/user-attachments/assets/d0a42860-219f-4695-baa6-8b65499b5166" />
+
+**/colombo**
+<img width="1918" height="883" alt="image" src="https://github.com/user-attachments/assets/5769da16-977f-4f47-810d-437f65f35f44" />
+
+**/metrics**
+<img width="1918" height="956" alt="image" src="https://github.com/user-attachments/assets/80d9747d-57da-4e39-846e-8d312e5b210d" />
+
+**Prometheus UI to query metrics:**
+<img width="1918" height="691" alt="image" src="https://github.com/user-attachments/assets/2ad059b6-fee7-4e8d-ad45-61648f31c3d5" />
+
+
+
+
+
+
+
+
