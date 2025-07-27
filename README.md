@@ -59,8 +59,8 @@ Follow the below steps to run the application in the local
 - Python 3.10+
 - `pip` (Python package manager)
 
-**Run Python Locally**
-```bash
+**Run Application Locally**
+
 # Install dependencies
 pip install -r requirements.txt
 
